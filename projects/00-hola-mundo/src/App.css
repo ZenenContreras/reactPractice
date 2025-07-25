@@ -37,14 +37,32 @@ header span{
     cursor: pointer;
 }
 
+.tw-followCard-button:hover{
+    background-color: #09f;
+}
+
 .tw-followCard-button.is-following{
-    border: 1px solid red;
+    border: 1px solid #bbb;
+    background-color: transparent;
+    color: white;
+    width: 140px;
 }
 
 .tw-followCard-button.is-following:hover{
-    background-color: red;
+    background-color: rgb(207, 50, 50);
+    border: 1px solid red;
+    transition: .5s ease all;
+    color: rgb(255, 146, 146);
 }
 
-.tw-followCard-button:hover{
-    background-color: #09f;
+.tw-followCard-button.is-following:hover .tw-followCard-follow{
+    display: none;
+}
+
+.tw-followCard-stopFollow{
+    display: none;
+}
+
+.tw-followCard-button.is-following:hover .tw-followCard-stopFollow{
+    display: block;
 }
