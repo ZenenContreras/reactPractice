@@ -24,6 +24,7 @@ const App = () => {
   const [debounceSearchTerm, setDebounceSearchTerm] = useState('')
   const [trendingMovies, setTrendindMovies] = useState([])
   const [errorMessageTrending, setErrorMessageTrending] = useState('')
+  const [isloadingTrending, setloadingTrending] = useState(false)
 
   useDebounce(()=> setDebounceSearchTerm(searchTerm), 700, [searchTerm])
 
@@ -65,13 +66,18 @@ const App = () => {
  }
 
  const loadTrendingMovies = async () =>{
+  setloadingTrending(true)
+  setErrorMessageTrending('')
   try {
     const movies = await getTrendingMovies()
     setTrendindMovies(movies)
     
   } catch (error) {
-    console.error(error)
-  }
+    console.error(`Error Fetching trending movies: ${error}`)
+    setErrorMessageTrending('Error fetching Trending movies. Please try again later.')
+  }finally {
+      setloadingTrending(false)
+    }
  }
 
   useEffect(()=>{
@@ -97,14 +103,22 @@ const App = () => {
             <section className='trending'>
               <h2>Trending Movies</h2>
 
-              <ul>
-                {trendingMovies.map((movie, index) => (
-                  <li key={movie.$id}>
-                    <p>{index + 1}</p>
-                    <img src={movie.poster_url} alt={movie.title} />
-                  </li>
-                ))}
-              </ul>
+                {isloadingTrending ? (
+                  <div className='p-12'>
+                    <Spinner />
+                  </div> 
+                ) : errorMessageTrending ? (
+                  <p className='text-red-500'>{errorMessage}</p> 
+                ) : (
+                  <ul>
+                    {trendingMovies.map((movie, index) => (
+                      <li key={movie.$id}>
+                        <p>{index + 1}</p>
+                        <img src={movie.poster_url} alt={movie.title} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </section>
           )}
 
