@@ -1,0 +1,38 @@
+import {ID, Client, Databases, Query} from 'appwrite'
+
+const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID
+const COLLECION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID
+const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID
+const ENDPOINT_ID = import.meta.env.VITE_APPWRITE_ENDPOINT
+
+const client = new Client()
+    .setEndpoint(ENDPOINT_ID)
+    .setProject(PROJECT_ID)
+
+const database = new Databases(client)
+export const updateSearchCount = async (searchTerm, movie) =>{
+    // 1. Use Apprite to check if the search term exits in the data base
+    try {
+        const result = await database.listDocuments(DATABASE_ID, COLLECION_ID, [Query.equal('searchTerm', searchTerm),])
+
+        // 2. if it does, update the count
+        if(result.documents.length > 0){
+            const doc = result.documents[0]
+
+            await database.updateDocument(DATABASE_ID, COLLECION_ID, doc.$id, {
+                count: doc.count +1
+            })
+            // 3.  if it doen't, create a new document with the search term and count as 1 
+        }else{
+            await database.createDocument(DATABASE_ID,COLLECION_ID, ID.unique(), {
+                searchTerm,
+                count: 1,
+                movie_id: movie.id,
+                poster_url: `https://iamge.tmdb.org/t/p/w500/${movie.poster_path}` ,
+            })
+        }
+    } catch (error) {
+        console.error(error)
+    }
+
+}
